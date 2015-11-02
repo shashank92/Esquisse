@@ -21,7 +21,7 @@ public class ExampleGameLoop implements GameLoop {
             .setTitle("Example Game")
             .setDimensions(600, 600)
             .setFPS(60)
-            //.makeFrameInvisible()
+            .makeFrameInvisible()
             .setGameLoop(this)
             .start();
     // These instances are final, so you only need to get them *once*.

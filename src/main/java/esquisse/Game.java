@@ -6,6 +6,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -26,14 +27,18 @@ public class Game {
     private boolean exitFlag = false;
 
     // Concurrency structures
-    private ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
+    private ScheduledExecutorService looper = 
+            Executors.newSingleThreadScheduledExecutor();
+    private ExecutorService monitor =
+            Executors.newSingleThreadExecutor();
     private ScheduledFuture<?> future;
     // Will be set later in startGameLoop()
     private Runnable gameLoopInvoker = () -> {
         if (exitFlag) {
             //System.out.println("exiting game...");
             frame.dispose();
-            service.shutdown();
+            looper.shutdown();
+            monitor.shutdown();
         }
         gameLoop.updateState();
         gameCanvas.repaint();
@@ -62,7 +67,8 @@ public class Game {
     private void startGameLoop() {
         // Final initialization before game loop
         if (gameLoop == null) {
-            System.err.println("Warning: No instance of GameLoop has been set.");
+            System.err.println(
+                    "Warning: No instance of GameLoop has been set.");
             return;
         }
 
@@ -74,17 +80,20 @@ public class Game {
         gameCanvas.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
-                future = service.scheduleAtFixedRate(gameLoopInvoker, period, period, TimeUnit.MICROSECONDS);
+                future = looper.scheduleAtFixedRate(
+                        gameLoopInvoker, 
+                        period, period, TimeUnit.MICROSECONDS);
                 // Future monitor thread
-                new Thread(() -> {
+                monitor.submit(() -> {
                     try {
                         future.get();
                     } catch (CancellationException ex) {
-                        // pass
+                        // This will happen when looper gets cancelled.
+                        // looper will get cancelled when window loses focus.
                     } catch (ExecutionException | InterruptedException ex) {
                         ex.printStackTrace();
                     }
-                }).start();
+                });
             }
 
             @Override

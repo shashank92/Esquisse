@@ -1,54 +1,49 @@
 package examples;
 
-import esquisse.*;
+import esquisse.Game;
+import esquisse.GameLoop;
+import esquisse.KeyState;
+import esquisse.MouseState;
+
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
-public class ExampleGame implements GameLoop {
-    Game game = new Game().setTitle("Example Game")
+public class ExampleGameLoop implements GameLoop {
+    
+    // Internal Game State Variables
+    int circleX = -600;
+    int circleY = -600;
+    int circleRadius = 20;
+    boolean circleFilled = false;
+
+    // Initializing the library.
+    Game game = new Game()
+            .setTitle("Example Game")
             .setDimensions(600, 600)
             .setFPS(60)
-            .makeFrameInvisible()
+            //.makeFrameInvisible()
             .setGameLoop(this)
             .start();
     // These instances are final, so you only need to get them *once*.
     KeyState keyState = game.getKeyState();
     MouseState mouseState = game.getMouseState();
-    // You're probably going to want this.
-    boolean exitGameFlag = false;
-    
-    // Internal Game State Variables
-    int circleX;
-    int circleY;
-    int circleRadius = 20;
-    boolean circleFilled = false;
-
 
     public static void main(String[] args) {
         // Instantiating the class runs all that constructor code above.
-        new ExampleGame();
-        // Now we just need to implement our three callbacks to satisfy the 
+        new ExampleGameLoop();
+        // Now we just need to implement our two callbacks to satisfy the
         // requirements of the interface.
-        // (It's basically two since one is so easy.) 
-    }
-    
-    @Override
-    public boolean exitGame() {
-        // This one is easy!
-        return exitGameFlag;
     }
 
     @Override
     public void updateState() {
-        
+
         // Exit game if Escape key is pressed.
         String key;
         while (!keyState.keyDownEvents.isEmpty()) {
             key = keyState.keyDownEvents.poll();
             if (key == "Escape") {
-                // Causes the callback to return true as well, 
-                // so Game can respond to it.
-                exitGameFlag = true;
+                game.exit();
             }
         }
         // Capture mouse position and use it to change game state.

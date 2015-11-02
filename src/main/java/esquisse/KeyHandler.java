@@ -2,13 +2,10 @@ package esquisse;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
-import java.util.TreeSet;
 
+// Internal API
 class KeyHandler implements KeyListener {
-    
+
     KeyState keyState = new KeyState();
 
     @Override
@@ -32,4 +29,5 @@ class KeyHandler implements KeyListener {
     @Override
     public void keyTyped(KeyEvent e) {
     }
+
 }

@@ -23,21 +23,20 @@ public class Game {
     // External (access through public methods).
     private int framesPerSecond = 60; // Client
     private GameLoop gameLoop;
+    private boolean exitFlag = false;
 
     // Concurrency structures
     private ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> future;
     // Will be set later in startGameLoop()
     private Runnable gameLoopInvoker = () -> {
-        if (gameLoop.exitGame()) {
+        if (exitFlag) {
             //System.out.println("exiting game...");
             frame.dispose();
             service.shutdown();
         }
-        if (gameLoop != null) {
-            gameLoop.updateState();
-            gameCanvas.repaint();
-        }
+        gameLoop.updateState();
+        gameCanvas.repaint();
     };
 
     private void initWindow() {
@@ -63,7 +62,8 @@ public class Game {
     private void startGameLoop() {
         // Final initialization before game loop
         if (gameLoop == null) {
-            System.out.println("Warning: No instance of GameLoop has been set.");
+            System.err.println("Warning: No instance of GameLoop has been set.");
+            return;
         }
 
         // Calculate period (microseconds) between frames.
@@ -141,6 +141,11 @@ public class Game {
     public Game start() {
         initWindow();
         startGameLoop();
+        return this;
+    }
+    
+    public Game exit() {
+        exitFlag = true;
         return this;
     }
 }

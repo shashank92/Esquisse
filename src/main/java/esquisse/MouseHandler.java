@@ -3,13 +3,10 @@ package esquisse;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
-import java.util.TreeSet;
 
+// Internal API
 class MouseHandler implements MouseListener, MouseMotionListener {
-
+    
     MouseState mouseState = new MouseState();
 
     @Override
@@ -17,7 +14,7 @@ class MouseHandler implements MouseListener, MouseMotionListener {
         mouseState.mouseMotions.add(e);
         // System.out.println(e.getX()+","+e.getY());
     }
-    
+
     @Override
     public void mouseDragged(MouseEvent e) {
         mouseState.mouseMotions.add(e);
@@ -41,7 +38,7 @@ class MouseHandler implements MouseListener, MouseMotionListener {
     @Override
     public void mouseClicked(MouseEvent e) {
     }
-    
+
     @Override
     public void mouseEntered(MouseEvent e) {
     }
@@ -49,4 +46,5 @@ class MouseHandler implements MouseListener, MouseMotionListener {
     @Override
     public void mouseExited(MouseEvent e) {
     }
+    
 }
